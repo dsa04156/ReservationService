@@ -4,4 +4,5 @@ from .models import Doctor
 class DoctorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Doctor
-        fields = ('doctor_name','hospital_name')
+        fields = '__all__'
+        # fields = ('doctor_name','hospital_name')
