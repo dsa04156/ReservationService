@@ -2,5 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('doctors/', views.DoctorList),
+    path('doctors/search/', views.DoctorSearch),
+    path('doctors/open/',views.find_open_doctors)
+    
 ]

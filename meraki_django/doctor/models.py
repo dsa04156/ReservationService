@@ -9,48 +9,48 @@ class Patient(models.Model):
         db_table = 'patient'
 
 
-class Departments(models.Model):
-    departments_id = models.AutoField(primary_key=True)
-    departments_name = models.CharField(max_length=30)
+class Department(models.Model):
+    department_id = models.AutoField(primary_key=True)
+    department_name = models.CharField(max_length=30)
 
     class Meta:
-        db_table = 'departments'
+        db_table = 'department'
 
 
-class BusinessHours(models.Model):
-    business_hours_id = models.AutoField(primary_key=True)
+class BusinessHour(models.Model):
+    business_hour_id = models.AutoField(primary_key=True)
     start_time = models.TimeField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
     lunch_start_time = models.TimeField(null=True, blank=True)
     lunch_end_time = models.TimeField(null=True, blank=True)
 
     class Meta:
-        db_table = 'business_hours'
+        db_table = 'business_hour'
 
 
 class Doctor(models.Model):
     doctor_id = models.AutoField(primary_key=True)
     doctor_name = models.CharField(max_length=30)
     hospital_name = models.CharField(max_length=30)
-    monday = models.ForeignKey(BusinessHours, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='monday')
-    tuesday = models.ForeignKey(BusinessHours, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='tuesday')
-    wednesday = models.ForeignKey(BusinessHours, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='wednesday')
-    thursday = models.ForeignKey(BusinessHours, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='thursday')
-    friday = models.ForeignKey(BusinessHours, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='friday')
-    saturday = models.ForeignKey(BusinessHours, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='saturday')
-    sunday = models.ForeignKey(BusinessHours, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='sunday')
+    monday = models.ForeignKey(BusinessHour, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='monday')
+    tuesday = models.ForeignKey(BusinessHour, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='tuesday')
+    wednesday = models.ForeignKey(BusinessHour, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='wednesday')
+    thursday = models.ForeignKey(BusinessHour, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='thursday')
+    friday = models.ForeignKey(BusinessHour, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='friday')
+    saturday = models.ForeignKey(BusinessHour, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='saturday')
+    sunday = models.ForeignKey(BusinessHour, on_delete=models.CASCADE, null=True, blank=True, related_name='+', db_column='sunday')
 
     class Meta:
         db_table = 'doctor'
 
 
-class DoctorDepartments(models.Model):
-    doctor_departments_id = models.AutoField(primary_key=True)
-    doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    department_id = models.ForeignKey(Departments, on_delete=models.CASCADE)
+class DoctorDepartment(models.Model):
+    doctor_department_id = models.AutoField(primary_key=True)
+    doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='doctor_department',db_column='doctor_id')
+    department_id = models.ForeignKey(Department, related_name='doctor_department',on_delete=models.CASCADE,db_column='department_id')
 
     class Meta:
-        db_table = 'doctor_departments'
+        db_table = 'doctor_department'
 
 
 class NonReimbursement(models.Model):
@@ -63,8 +63,8 @@ class NonReimbursement(models.Model):
 
 class DoctorNonReimbursement(models.Model):
     doctor_non_reimbursement_id = models.AutoField(primary_key=True)
-    doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    non_reimbursement_id = models.ForeignKey(NonReimbursement, on_delete=models.CASCADE)
+    doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE,related_name='doctor_non_reimbursement',db_column='doctor_id')
+    non_reimbursement_id = models.ForeignKey(NonReimbursement, on_delete=models.CASCADE,related_name='doctor_non_reimbursement',db_column='non_reimbursement_id')
 
     class Meta:
         db_table = 'doctor_non_reimbursement'
