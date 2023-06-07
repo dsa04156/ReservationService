@@ -8,7 +8,7 @@ class DoctorSerializer(serializers.ModelSerializer):
         # fields = ('doctor_name','hospital_name')
 
 class DoctorSearchSerializer(serializers.Serializer):
-    doctor_name = serializers.CharField()
-    hospital_name = serializers.CharField()
-    non_reimbursements = serializers.ListField(child=serializers.CharField(), allow_empty=True)
-    departments = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+    query = serializers.CharField(help_text="검색 내용 입력",required=True)
+
+class OpenSearchSerializer(serializers.Serializer):
+    datetime = serializers.CharField(help_text="시간 입력",required=True)
