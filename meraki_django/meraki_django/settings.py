@@ -84,7 +84,7 @@ DATABASES = {
         'NAME': 'meraki',
         'USER': 'jinuk',
         'PASSWORD': 'jinuk1234',
-        'HOST': '3.39.195.159',
+        'HOST': '3.35.8.107',
         'PORT': '5432',
         'OPTIONS': {
             'options': '-c search_path=meraki',

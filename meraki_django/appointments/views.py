@@ -51,7 +51,7 @@ class AppointmentRequest(APIView):
         # appointment.save()
         # 예약 정보 응답
         serializer = AppointmentRequestResponseSerializer(appointment)
-        return Response("", status=status.HTTP_200_OK)
+        return Response("성공", status=status.HTTP_200_OK)
 
     def calculate_expiration_datetime(self, appointment_datetime, doctor):
         # 요일별 영업 시간 가져오기

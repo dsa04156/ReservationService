@@ -87,7 +87,7 @@ class DoctorCreate(APIView):
         doctor_name = data.get('doctor_name')
         hospital_name = data.get('hospital_name')
         department_name = data.get('department_name')
-        non_reimbursed_name = data.get('non_reimbursed_name')
+        non_reimbursed_name = data.get('non_reimbursement_name')
         monday = data.get('monday')
         tuesday = data.get('tuesday')
         wednesday = data.get('wednesday')
@@ -178,11 +178,12 @@ class DoctorCreate(APIView):
         department, _ = Department.objects.get_or_create(department_name=department_name)
         DoctorDepartment.objects.create(doctor_id=doctor, department_id=department)
         
-
+        print(non_reimbursed_name)
         # 비급여 과목 데이터 삽입
         if non_reimbursed_name:
             non_reimbursement, _ = NonReimbursement.objects.get_or_create(non_reimbursement_name=non_reimbursed_name)
             DoctorNonReimbursement.objects.create(doctor_id=doctor, non_reimbursement_id=non_reimbursement)
+            print("생성했따")
 
         return Response("성공", status=status.HTTP_200_OK)
         
