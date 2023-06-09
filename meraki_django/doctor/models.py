@@ -1,14 +1,5 @@
 from django.db import models
 
-
-class Patient(models.Model):
-    patient_id = models.AutoField(primary_key=True)
-    patient_name = models.CharField(max_length=15)
-
-    class Meta:
-        db_table = 'patient'
-
-
 class Department(models.Model):
     department_id = models.AutoField(primary_key=True)
     department_name = models.CharField(max_length=30)
@@ -70,13 +61,3 @@ class DoctorNonReimbursement(models.Model):
         db_table = 'doctor_non_reimbursement'
 
 
-class MedicalAppointment(models.Model):
-    medical_appointment_id = models.AutoField(primary_key=True)
-    appointment_datetime = models.DateTimeField()
-    expiration_datetime = models.DateTimeField()
-    status = models.IntegerField(default=0)
-    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'medical_appointment'

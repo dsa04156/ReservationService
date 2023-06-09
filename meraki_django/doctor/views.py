@@ -1,6 +1,5 @@
-from .models import Doctor
-from .serializers import DoctorSerializer,DoctorSearchSerializer,OpenSearchSerializer
-from rest_framework.decorators import api_view
+from .models import Doctor,BusinessHour,Department,NonReimbursement, DoctorDepartment, DoctorNonReimbursement
+from .serializers import DoctorSearchSerializer,OpenSearchSerializer,DoctorCreateSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -8,9 +7,11 @@ from django.db import connection
 from django.db.models import Q
 from datetime import datetime
 from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from drf_yasg.utils       import swagger_auto_schema
-from drf_yasg             import openapi        
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi       
+from django.db import transaction 
+
+
 # http://127.0.0.1:8000/api/doctors/search/?query={검색값}
 # @api_view(['GET'])
 class DoctorSearch(APIView):
@@ -73,3 +74,116 @@ class FindOpenDoctors(APIView):
             return Response(formatted_names, status=status.HTTP_200_OK)
         except ValueError:
             return Response("Invalid datetime format", status=status.HTTP_400_BAD_REQUEST)
+        
+class DoctorCreate(APIView):
+    @swagger_auto_schema(
+        tags=['의사 데이터를 생성합니다.'],
+        request_body=DoctorCreateSerializer,
+        responses={200: openapi.Response('Success')}
+    )
+    @transaction.atomic
+    def post(self,request):
+        data = request.data
+        doctor_name = data.get('doctor_name')
+        hospital_name = data.get('hospital_name')
+        department_name = data.get('department_name')
+        non_reimbursed_name = data.get('non_reimbursed_name')
+        monday = data.get('monday')
+        tuesday = data.get('tuesday')
+        wednesday = data.get('wednesday')
+        thursday = data.get('thursday')
+        friday = data.get('friday')
+        saturday = data.get('saturday')
+        sunday = data.get('sunday')
+        doctor = Doctor.objects.create(doctor_name=doctor_name, hospital_name=hospital_name)
+
+                # 월요일 영업시간 데이터 처리
+        if monday:
+            start_time, end_time, lunch_start_time, lunch_end_time = monday.split(' ')
+            business_hour = BusinessHour.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                lunch_start_time=lunch_start_time,
+                lunch_end_time=lunch_end_time
+            )
+            doctor.monday = business_hour
+        
+        # 화요일 영업시간 데이터 처리
+        if tuesday:
+            start_time, end_time, lunch_start_time, lunch_end_time = tuesday.split(' ')
+            business_hour = BusinessHour.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                lunch_start_time=lunch_start_time,
+                lunch_end_time=lunch_end_time
+            )
+            doctor.tuesday = business_hour
+        
+        # 수요일 영업시간 데이터 처리
+        if wednesday:
+            start_time, end_time, lunch_start_time, lunch_end_time = wednesday.split(' ')
+            business_hour = BusinessHour.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                lunch_start_time=lunch_start_time,
+                lunch_end_time=lunch_end_time
+            )
+            doctor.wednesday = business_hour
+        
+        # 목요일 영업시간 데이터 처리
+        if thursday:
+            start_time, end_time, lunch_start_time, lunch_end_time = thursday.split(' ')
+            business_hour = BusinessHour.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                lunch_start_time=lunch_start_time,
+                lunch_end_time=lunch_end_time
+            )
+            doctor.thursday = business_hour
+        
+        # 금요일 영업시간 데이터 처리
+        if friday:
+            start_time, end_time, lunch_start_time, lunch_end_time = friday.split(' ')
+            business_hour = BusinessHour.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                lunch_start_time=lunch_start_time,
+                lunch_end_time=lunch_end_time
+            )
+            doctor.friday = business_hour
+        
+        if saturday:
+            start_time, end_time, lunch_start_time, lunch_end_time = saturday.split(' ')
+            business_hour = BusinessHour.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                lunch_start_time=lunch_start_time,
+                lunch_end_time=lunch_end_time
+            )
+            doctor.saturday = business_hour
+
+        if sunday:
+            start_time, end_time, lunch_start_time, lunch_end_time = sunday.split(' ')
+            business_hour = BusinessHour.objects.create(
+                start_time=start_time,
+                end_time=end_time,
+                lunch_start_time=lunch_start_time,
+                lunch_end_time=lunch_end_time
+            )
+            doctor.sunday = business_hour
+        
+        doctor.save()
+        
+        # 진료과 데이터 삽입
+        department, _ = Department.objects.get_or_create(department_name=department_name)
+        DoctorDepartment.objects.create(doctor_id=doctor, department_id=department)
+        
+
+        # 비급여 과목 데이터 삽입
+        if non_reimbursed_name:
+            non_reimbursement, _ = NonReimbursement.objects.get_or_create(non_reimbursement_name=non_reimbursed_name)
+            DoctorNonReimbursement.objects.create(doctor_id=doctor, non_reimbursement_id=non_reimbursement)
+
+        return Response("성공", status=status.HTTP_200_OK)
+        
+    
