@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import AppointmentRequestCreateSerializer,AppointmentRequestResponseSerializer
+from .serializers import AppointmentRequestCreateSerializer,AppointmentRequestResponseSerializer,PatientListSerializer,DoctorListSerializer
 from doctor.models import Doctor,BusinessHour
 from .models import MedicalAppointment,Patient
 # Create your views here.
@@ -11,6 +11,46 @@ from django.db.models import Q
 from rest_framework import status
 from datetime import datetime,timedelta
 from django.utils import timezone
+
+class GetPatient(APIView):
+    @swagger_auto_schema(
+        tags=['환자 목록'],
+        responses={200: openapi.Response('Success')}
+    )
+    def get(self, request):
+        patients = Patient.objects.all()
+        
+        serializer = PatientListSerializer(patients, many=True)  # 여러 개의 환자 객체를 직렬화하기 위해 `many=True` 옵션 사용
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class GetDoctor(APIView):
+    @swagger_auto_schema(
+        tags=['의사 목록'],
+        responses={200: openapi.Response('Success')}
+    )
+    def get(self, request):
+        doctors = Doctor.objects.all()
+        
+        serializer = DoctorListSerializer(doctors, many=True)  # 여러 개의 환자 객체를 직렬화하기 위해 `many=True` 옵션 사용
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class CreatePatient(APIView):
+    patient_name = openapi.Parameter('patient_name', openapi.IN_QUERY, description='patient_name param', required=True, type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(
+        tags=['환자를 생성합니다.'],
+        manual_parameters=[patient_name],
+        responses={200: openapi.Response('Success')}
+    )
+    def get(self, request):
+        patient_name = request.GET.get('patient_name')
+        print(patient_name)
+        Patient.objects.create(patient_name=patient_name)
+        return Response("성공", status=status.HTTP_200_OK)
+    
 
 class AppointmentRequest(APIView):
     @swagger_auto_schema(
@@ -167,3 +207,5 @@ class AcceptMedicalAppointment(APIView):
         
         except MedicalAppointment.DoesNotExist:
             return Response("해당 진료요청을 찾을 수 없습니다.", status=status.HTTP_404_NOT_FOUND)
+        
+        
